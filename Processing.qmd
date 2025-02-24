@@ -53,69 +53,30 @@ AFOverlap <- read.csv("BeadAFOverlap.csv", check.names=FALSE)
 ```
 
 ```{r}
-LuciernagaWrapper <- function(x, UnstainedList, FluorophoreList, Multiple=FALSE,
-    GateTemplatePath, removestrings=".fcs", AFOverlap){
+Data <- Luciernaga_SignatureExternalUnstained(x=Dates1, UnstainedList=UnstainedBeads,
+ FluorophoreList=Beads, Multiple=FALSE, GateTemplatePath=GateTemplatePath, AFOverlap=AFOverlap)
+```
 
-    Value <- paste0(x, "(?!\\d)")
-    Unstained <- UnstainedList[str_detect(UnstainedList, Value, negate = FALSE)]
-    Fluorophore <- FluorophoreList[str_detect(FluorophoreList, Value, negate = FALSE)]
+```{r}
+Folder <- "Myeloid"
+outpath <- file.path("/home", "david", "Documents", "SingleColors", "data")
+outpath <- file.path(outpath, Folder)
+filename <- "AF647_CD163_Myeloid"
 
-    if (Multiple == FALSE){
-     if (length(Fluorophore) != length(Unstained)){
-        stop("Mismatch unstained vs stained")}
-    }
+Dataset <- Data$data
+CSVFilename <- paste0(filename, ".csv")
+CSVFilename <- file.path(outpath, CSVFilename)
+write.csv(Dataset, CSVFilename, row.names=FALSE)
 
-    files <- c(Unstained, Fluorophore)
-    cs <- load_cytoset_from_fcs(files, truncate_max_range = FALSE, transformation = FALSE)
-    gs <- GatingSet(cs)
+ThePlots <- flatten(Data$plot)
+SendPDF <- function(x, outpath, filename, width = 7, height = 9){
+    TheName <- paste0(filename, ".pdf")
+    StorageLocation <- file.path(outpath, TheName)
 
-    TheGates <- data.table::fread(GateTemplatePath)
-    TheGating <- gatingTemplate(TheGates)
-    gt_gating(TheGating, gs)
-
-    Plot <- map(.x=gs, .f=Utility_GatingPlots, sample.name=c("GROUPNAME", "TUBENAME"), removestrings=removestrings, subset="root", gtFile=TheGates, DesiredGates=NULL,
-    outpath = NULL, returnType="patchwork", therows=2, thecolumns=2)
-
-    pd <- pData(gs)
-    Names <- pData(gs)$name
-    Unstained <- str_detect(Names, "Unstained")
-    Unstained <- data.frame(Unstained, check.names=FALSE)
-    newpd <- cbind(pd, Unstained)
-    pData(gs) <- newpd
-
-    TheUnstained <- subset(gs, Unstained == TRUE)
-    TheFluorophore <- subset(gs, Unstained == FALSE)
-
-    UnstainedBeads <- Luciernaga_QC(x=TheUnstained[1], desiredAF = NULL,
-                    subsets="singlets", removestrings=removestrings,
-                    sample.name="GUID", unmixingcontroltype = "beads",
-                    Unstained = TRUE, ratiopopcutoff = 0.01, Verbose = FALSE,
-                    AFOverlap = AFOverlap, stats = "median",
-                    ExportType = "data.frame", SignatureReturnNow = TRUE,
-                    outpath = NULL)
-    
-    FluorophoreSignature <- map(.x=TheFluorophore, .f=Luciernaga_QC,
-        subsets="singlets", removestrings=removestrings, sample.name="GUID",
-        unmixingcontroltype = "beads", Unstained = FALSE, ratiopopcutoff = 0.01, Verbose = FALSE, AFOverlap = AFOverlap, stats = "median", 
-        ExportType = "data", SignatureReturnNow = FALSE,
-        outpath = NULL, Increments=0.1, SecondaryPeaks=2, experiment = x,
-        condition = x, SCData="subtracted", NegativeType="default", BeadAF=UnstainedBeads, BeadMainAF="UV1-A") |> bind_rows()
-    
-    TheReturns <- list(Plot=Plot, data=FluorophoreSignature)
-
-    return(TheReturns)
+    pdf(file = StorageLocation, width = width, height = height)
+    print(x)
+    dev.off()
 }
-```
 
-```{r}
-Iterated <- map(.x=Dates1, .f=LuciernagaWrapper, UnstainedList=UnstainedBeads, FluorophoreList=Beads, Multiple=FALSE, GateTemplatePath=GateTemplatePath, AFOverlap=AFOverlap)
-```
-
-```{r}
-Iterated
-
-ThePlots <- lapply(Iterated, function(x) x$Plot)
-TheData <- lapply(Iterated, function(x) x$data)
-TheDataset <- bind_rows(TheData)
-#View(TheDataset)
+SendPDF(x=ThePlots, outpath=outpath, filename=filename)
 ```

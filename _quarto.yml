@@ -1,5 +1,8 @@
 project:
   type: website
+  render:
+  - "*.qmd"
+  - "!Processing.qmd"
   output-dir: docs/
 website:
   announcement: 
