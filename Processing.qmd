@@ -23,11 +23,12 @@ if (length(Dates1) != length(Dates2)){stop("Different number of unstained to sin
 ```
 
 ```{r}
-library(purrr)
 library(flowCore)
 library(flowWorkspace)
 library(openCyto)
 library(Luciernaga)
+library(purrr)
+library(dplyr)
 
 x <- Dates1[1]
 UnstainedList <- UnstainedBeads
@@ -52,8 +53,6 @@ AFOverlap <- read.csv("BeadAFOverlap.csv", check.names=FALSE)
 ```
 
 ```{r}
-map(.x=Dates, UnstainedList=UnstainedBeads, FluorophoreList=Beads)
-
 LuciernagaWrapper <- function(x, UnstainedList, FluorophoreList, Multiple=FALSE,
     GateTemplatePath, removestrings=".fcs", AFOverlap){
 
@@ -85,6 +84,7 @@ LuciernagaWrapper <- function(x, UnstainedList, FluorophoreList, Multiple=FALSE,
     pData(gs) <- newpd
 
     TheUnstained <- subset(gs, Unstained == TRUE)
+    TheFluorophore <- subset(gs, Unstained == FALSE)
 
     UnstainedBeads <- Luciernaga_QC(x=TheUnstained[1], desiredAF = NULL,
                     subsets="singlets", removestrings=removestrings,
@@ -94,10 +94,28 @@ LuciernagaWrapper <- function(x, UnstainedList, FluorophoreList, Multiple=FALSE,
                     ExportType = "data.frame", SignatureReturnNow = TRUE,
                     outpath = NULL)
     
+    FluorophoreSignature <- map(.x=TheFluorophore, .f=Luciernaga_QC,
+        subsets="singlets", removestrings=removestrings, sample.name="GUID",
+        unmixingcontroltype = "beads", Unstained = FALSE, ratiopopcutoff = 0.01, Verbose = FALSE, AFOverlap = AFOverlap, stats = "median", 
+        ExportType = "data", SignatureReturnNow = FALSE,
+        outpath = NULL, Increments=0.1, SecondaryPeaks=2, experiment = x,
+        condition = x, SCData="subtracted", NegativeType="default", BeadAF=UnstainedBeads, BeadMainAF="UV1-A") |> bind_rows()
+    
+    TheReturns <- list(Plot=Plot, data=FluorophoreSignature)
 
-
-  
-
+    return(TheReturns)
 }
+```
 
+```{r}
+Iterated <- map(.x=Dates1, .f=LuciernagaWrapper, UnstainedList=UnstainedBeads, FluorophoreList=Beads, Multiple=FALSE, GateTemplatePath=GateTemplatePath, AFOverlap=AFOverlap)
+```
+
+```{r}
+Iterated
+
+ThePlots <- lapply(Iterated, function(x) x$Plot)
+TheData <- lapply(Iterated, function(x) x$data)
+TheDataset <- bind_rows(TheData)
+#View(TheDataset)
 ```
