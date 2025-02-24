@@ -8,6 +8,8 @@ website:
     content: "Please see left-sidebar for definitions"
     type: info
     position: below-navbar  
+  google-analytics:
+    tracking-id: "G-K91JKBNH5N"
   title: "Cairo Lab: Unmixing Control Monitoring"
   navbar:
     logo: images/hex.png
