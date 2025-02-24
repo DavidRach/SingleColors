@@ -73,7 +73,7 @@ Plot <- Luciernaga_BrigtnessOverTime(data=Data)
 plotly::ggplotly(Plot)
 ```
 
-### Instrumental MFI
+## Instrumental MFI
 
 ```{r}
 PeakDetectors <- Data1 |> pull(Cluster) |> strsplit("_") |> map_chr(1)
@@ -127,7 +127,7 @@ ThePlotsMFI <- QC_Plots(x=x, FailedFlag=TRUE, MeasurementType=Detector,
 plotly::ggplotly(ThePlotsMFI[[1]])
 ```
 
-### Instrumental Gain
+## Instrumental Gain
 
 ```{r}
 x <- Gain
@@ -148,7 +148,7 @@ ThePlotsGain <- QC_Plots(x=x, FailedFlag=TRUE, MeasurementType=TheGains,
 plotly::ggplotly(ThePlotsGain[[1]])
 ```
 
-### Instrumental RCV
+## Instrumental RCV
 
 ```{r}
 x <- Gain
