@@ -10,7 +10,7 @@ website:
     position: below-navbar  
   title: "Cairo Lab: Unmixing Control Monitoring"
   navbar:
-    logo: images/hex.svg
+    logo: images/hex.png
     left:
     - text: "Home"
       href: index.qmd

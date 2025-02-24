@@ -1,6 +1,17 @@
 ---
-title: "ILTs"
-format: html
+format:
+  dashboard:
+    orientation: rows
+project:
+  output-dir: docs/
 ---
 
 ILTs
+
+## {.sidebar}
+
+**About**
+
+This dashboard contains visualized data from respective panels unmixing controls, as well as relavent instrumental data for the 5 laser Cytek Aurora at the [UMGCC FCSS](https://umgccfcss.github.io/InstrumentQC/)
+
+This dashboard was created with [Quarto](https://quarto.org/) and is maintained by [David Rach](https://github.com/DavidRach)
