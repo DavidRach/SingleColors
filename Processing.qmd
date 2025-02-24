@@ -24,15 +24,38 @@ if (length(Dates1) != length(Dates2)){stop("Different number of unstained to sin
 
 ```{r}
 library(purrr)
+library(flowCore)
 library(flowWorkspace)
+library(openCyto)
+library(Luciernaga)
 
 x <- Dates1[1]
-list1 <- UnstainedBeads
-list2 <- Beads
+UnstainedList <- UnstainedBeads
+FluorophoreList <- Beads
+Multiple = FALSE
+removestrings=".fcs"
 
+#File_Location <- system.file("extdata", package = "Luciernaga")
+#BeadGateCSV <- list.files(File_Location, pattern="GatesBeads.csv", full.names = TRUE)
+#GateTemplatePath <- BeadGateCSV
+#write.csv(TheGates, "BeadGates.csv", row.names=FALSE)
+CSVPath <- getwd()
+GateTemplatePath <- file.path(CSVPath, "BeadGates.csv")
+```
+
+```{r}
+#FileLocation <- system.file("extdata", package = "Luciernaga")
+#pattern = "AutofluorescentOverlaps.csv"
+#AFOverlap <- list.files(path=FileLocation, pattern=pattern, full.names = TRUE)
+AFOverlap <- read.csv("BeadAFOverlap.csv", check.names=FALSE)
+#write.csv(AFOverlap, "BeadAFOverlap.csv", row.names=FALSE)
+```
+
+```{r}
 map(.x=Dates, UnstainedList=UnstainedBeads, FluorophoreList=Beads)
 
-LuciernagaWrapper <- function(x, UnstainedList, FluorophoreList, Multiple=FALSE){
+LuciernagaWrapper <- function(x, UnstainedList, FluorophoreList, Multiple=FALSE,
+    GateTemplatePath, removestrings=".fcs", AFOverlap){
 
     Value <- paste0(x, "(?!\\d)")
     Unstained <- UnstainedList[str_detect(UnstainedList, Value, negate = FALSE)]
@@ -46,6 +69,31 @@ LuciernagaWrapper <- function(x, UnstainedList, FluorophoreList, Multiple=FALSE)
     files <- c(Unstained, Fluorophore)
     cs <- load_cytoset_from_fcs(files, truncate_max_range = FALSE, transformation = FALSE)
     gs <- GatingSet(cs)
+
+    TheGates <- data.table::fread(GateTemplatePath)
+    TheGating <- gatingTemplate(TheGates)
+    gt_gating(TheGating, gs)
+
+    Plot <- map(.x=gs, .f=Utility_GatingPlots, sample.name=c("GROUPNAME", "TUBENAME"), removestrings=removestrings, subset="root", gtFile=TheGates, DesiredGates=NULL,
+    outpath = NULL, returnType="patchwork", therows=2, thecolumns=2)
+
+    pd <- pData(gs)
+    Names <- pData(gs)$name
+    Unstained <- str_detect(Names, "Unstained")
+    Unstained <- data.frame(Unstained, check.names=FALSE)
+    newpd <- cbind(pd, Unstained)
+    pData(gs) <- newpd
+
+    TheUnstained <- subset(gs, Unstained == TRUE)
+
+    UnstainedBeads <- Luciernaga_QC(x=TheUnstained[1], desiredAF = NULL,
+                    subsets="singlets", removestrings=removestrings,
+                    sample.name="GUID", unmixingcontroltype = "beads",
+                    Unstained = TRUE, ratiopopcutoff = 0.01, Verbose = FALSE,
+                    AFOverlap = AFOverlap, stats = "median",
+                    ExportType = "data.frame", SignatureReturnNow = TRUE,
+                    outpath = NULL)
+    
 
 
   
