@@ -1,0 +1,38 @@
+project:
+  type: website
+  output-dir: docs/
+website:
+  announcement: 
+    icon: info-circle
+    dismissable: true
+    content: "Please see left-sidebar for definitions"
+    type: info
+    position: below-navbar  
+  title: "Cairo Lab: Unmixing Control Monitoring"
+  navbar:
+    logo: images/hex.svg
+    left:
+    - text: "Home"
+      href: index.qmd
+    - text: "Panel"
+      menu:
+      - text: "Myeloid"
+        href: Myeloid.qmd
+      - text: "Bcells"
+        href: Bcells.qmd
+      - text: "AlphaBeta"
+        href: AlphaBeta.qmd
+      - text: "ILTs"
+        href: ILTs.qmd
+    right:
+    - icon: github
+      href: https://github.com/DavidRach/SingleColors
+      aria-label: GitHub
+  page-footer:
+    background: light
+    left: University of Maryland, Baltimore
+    right: Built with [Quarto](https://quarto.org/){target=_blank}
+
+format:
+  html:
+    theme: styles.scss
