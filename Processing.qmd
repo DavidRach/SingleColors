@@ -4,11 +4,16 @@ format: html
 ---
 ```{r}
 library(stringr)
+library(flowCore)
+library(flowWorkspace)
+library(openCyto)
+library(Luciernaga)
+library(purrr)
+library(dplyr)
 ```
 
 ```{r}
 Folder <- file.path("/media", "david", "DavidRach", "SingleColors", "Myeloid_DHIM")
-Subset <- file.path(Folder, "Aug1")
 
 UnstainedBeads <- "Beads\\Unstained"
 UnstainedBeads <- list.files(Folder, UnstainedBeads, full.names=TRUE, recursive=TRUE)
@@ -23,33 +28,10 @@ if (length(Dates1) != length(Dates2)){stop("Different number of unstained to sin
 ```
 
 ```{r}
-library(flowCore)
-library(flowWorkspace)
-library(openCyto)
-library(Luciernaga)
-library(purrr)
-library(dplyr)
-
-x <- Dates1[1]
-UnstainedList <- UnstainedBeads
-FluorophoreList <- Beads
-Multiple = FALSE
-removestrings=".fcs"
-
-#File_Location <- system.file("extdata", package = "Luciernaga")
-#BeadGateCSV <- list.files(File_Location, pattern="GatesBeads.csv", full.names = TRUE)
-#GateTemplatePath <- BeadGateCSV
-#write.csv(TheGates, "BeadGates.csv", row.names=FALSE)
 CSVPath <- getwd()
 GateTemplatePath <- file.path(CSVPath, "BeadGates.csv")
-```
 
-```{r}
-#FileLocation <- system.file("extdata", package = "Luciernaga")
-#pattern = "AutofluorescentOverlaps.csv"
-#AFOverlap <- list.files(path=FileLocation, pattern=pattern, full.names = TRUE)
 AFOverlap <- read.csv("BeadAFOverlap.csv", check.names=FALSE)
-#write.csv(AFOverlap, "BeadAFOverlap.csv", row.names=FALSE)
 ```
 
 ```{r}
