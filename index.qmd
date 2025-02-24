@@ -1,6 +1,9 @@
 ---
-title: "Home"
-format: html
+format:
+  dashboard:
+    orientation: rows
+project:
+  output-dir: docs/
 ---
 
 Hello

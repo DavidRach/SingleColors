@@ -1,0 +1,55 @@
+---
+title: "ProcessingScript"
+format: html
+---
+```{r}
+library(stringr)
+```
+
+```{r}
+Folder <- file.path("/media", "david", "DavidRach", "SingleColors", "Myeloid_DHIM")
+Subset <- file.path(Folder, "Aug1")
+
+UnstainedBeads <- "Beads\\Unstained"
+UnstainedBeads <- list.files(Folder, UnstainedBeads, full.names=TRUE, recursive=TRUE)
+Dates1 <- str_extract(UnstainedBeads, "(?<=DHIM/)[^/]+(?=/Beads)")
+
+Fluorophore <- "Alexa Fluor 647"
+Beads <- list.files(Folder, Fluorophore, full.names=TRUE, recursive=TRUE)
+Beads <- Beads[grep("Beads", Beads)]
+Dates2 <- str_extract(Beads, "(?<=DHIM/)[^/]+(?=/CD163)")
+
+if (length(Dates1) != length(Dates2)){stop("Different number of unstained to single color controls")}
+```
+
+```{r}
+library(purrr)
+library(flowWorkspace)
+
+x <- Dates1[1]
+list1 <- UnstainedBeads
+list2 <- Beads
+
+map(.x=Dates, UnstainedList=UnstainedBeads, FluorophoreList=Beads)
+
+LuciernagaWrapper <- function(x, UnstainedList, FluorophoreList, Multiple=FALSE){
+
+    Value <- paste0(x, "(?!\\d)")
+    Unstained <- UnstainedList[str_detect(UnstainedList, Value, negate = FALSE)]
+    Fluorophore <- FluorophoreList[str_detect(FluorophoreList, Value, negate = FALSE)]
+
+    if (Multiple == FALSE){
+     if (length(Fluorophore) != length(Unstained)){
+        stop("Mismatch unstained vs stained")}
+    }
+
+    files <- c(Unstained, Fluorophore)
+    cs <- load_cytoset_from_fcs(files, truncate_max_range = FALSE, transformation = FALSE)
+    gs <- GatingSet(cs)
+
+
+  
+
+}
+
+```
