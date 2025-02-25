@@ -15,24 +15,35 @@ FileSort <- function(list, study, type, controlType){
     if (controlType == "beads"){
     ThisPattern <- paste0("(?<=", study, "/)[^/]+(?=/", type, ")")
     } else {
-    ThisPattern <- paste0("(?<=/", study, "/)([^/]+)(?=/)")
-    ThisPattern <- paste0("(?<=/", study, "/)([^/]+)(?=/)")
+    ThisPattern <- paste0(".*", study, "/([^/]+)/.*")
     }
-    TheseFiles <- str_extract(list, ThisPattern)
+    TheseFiles <- str_match(list, ThisPattern)[,2]
+    return(TheseFiles)
 }
 ```
 
 ```{r}
+StorageFolder <- file.path("/home", "david", "Documents", "SingleColors", "data")
+FolderName <- "Myeloid" 
+StorageFolder <- file.path(StorageFolder, FolderName)
+
+subsets <- "nonDebris"
+
 Folder <- file.path("/media", "david", "DavidRach", "SingleColors", "Myeloid_DHIM")
 
-Study <- "DHIM"
+Study <- "Myeloid_DHIM"
+Fluorophore <- "BUV395"
+Antigen <- "CD18"
+
 controlType <- "cells"
 Type <- "Cells"
+UnstainedType <- "/Unstained" # For delta cell unstained selection
 
-Study <- "DHIM"
-controlType <- "beads"
-Type <- "Beads"
+#controlType <- "beads"
+#Type <- "Beads"
+```
 
+```{r}
 if (controlType == "beads"){
 TheUnstained <- "Unstained"
 Unstained <- list.files(Folder, TheUnstained, full.names=TRUE, recursive=TRUE)
@@ -41,40 +52,49 @@ Unstained <- Unstained[grep("Beads", Unstained)]
 TheUnstained <- "Unstained"
 Unstained <- list.files(Folder, TheUnstained, full.names=TRUE, recursive=TRUE)
 Unstained <- Unstained[grep("Cells", Unstained)]
+Unstained <- Unstained[grep(UnstainedType, Unstained)]
 } else {stop("Set controlType argument")}
 
 Dates1 <- FileSort(list=Unstained, study=Study, type=Type, controlType=controlType)
 
+Stained  <- list.files(Folder, Fluorophore, full.names=TRUE, recursive=TRUE)
 
+if (controlType == "beads"){
+    Stained <- Stained [grep("Beads", Stained )]
+} else {Stained <- Stained [grep("Cells", Stained )]}
 
-Dates1 <- str_extract(Unstained, "(?<=DHIM/)[^/]+(?=/Beads)")
-Dates1 <- str_extract(Unstained, "(?<=DHIM/)[^/]+(?=/Beads)")
+Dates2 <- str_extract(Stained, paste0("(?<=", Study, "/)[^/]+(?=/", Antigen, ")"))
 
-Fluorophore <- "PerCP-Cy5.5"
-Beads <- list.files(Folder, Fluorophore, full.names=TRUE, recursive=TRUE)
-Beads <- Beads[grep("Beads", Beads)]
-Dates2 <- str_extract(Beads, "(?<=DHIM/)[^/]+(?=/CD123)")
 
 if (length(Dates1) != length(Dates2)){stop("Different number of unstained to single color controls")}
 ```
 
 ```{r}
 CSVPath <- getwd()
+
+if (controlType == "beads"){
 GateTemplatePath <- file.path(CSVPath, "BeadGates.csv")
-
 AFOverlap <- read.csv("BeadAFOverlap.csv", check.names=FALSE)
+} 
+
+if (controlType == "cells"){
+    AFOverlap <- read.csv("CellAFOverlap.csv", check.names=FALSE)
+
+    if (subsets=="monocytes"){GateTemplatePath <- file.path(CSVPath, "MonocyteGates.csv")
+        } else if (subsets=="lymphocytes"){GateTemplatePath <- file.path(CSVPath, "LymphocyteGates.csv")
+        } else {GateTemplatePath <- file.path(CSVPath, "LymphocyteGates.csv")}
+}
 ```
 
 ```{r}
-Data <- Luciernaga_SignatureExternalUnstained(x=Dates1, UnstainedList=UnstainedBeads,
- FluorophoreList=Beads, Multiple=FALSE, GateTemplatePath=GateTemplatePath, AFOverlap=AFOverlap)
+Data <- Luciernaga_SignatureExternalUnstained(x=Dates1, UnstainedList=Unstained,
+ FluorophoreList=Stained, Multiple=FALSE, GateTemplatePath=GateTemplatePath,
+ AFOverlap=AFOverlap, controlType=controlType, subsets=subsets)
 ```
 
 ```{r}
-Folder <- "Myeloid"
-outpath <- file.path("/home", "david", "Documents", "SingleColors", "data")
-outpath <- file.path(outpath, Folder)
-filename <- "PerCP-Cy5.5_CD123_Myeloid"
+outpath <- StorageFolder
+filename <- paste0(Fluorophore, "_", Antigen, "_", FolderName)
 
 Dataset <- Data$data
 CSVFilename <- paste0(filename, ".csv")
