@@ -23,13 +23,15 @@ FileSort <- function(list, study, type, controlType){
 ```
 
 ```{r}
-StorageFolder <- file.path("/home", "david", "Documents", "SingleColors", "data")
+#StorageFolder <- file.path("/home", "david", "Documents", "SingleColors", "data")
+StorageFolder <- file.path("C:", "Users", "12692", "Documents", "SingleColors", "data")
 FolderName <- "Myeloid" 
 StorageFolder <- file.path(StorageFolder, FolderName)
 
 subsets <- "nonDebris"
 
-Folder <- file.path("/media", "david", "DavidRach", "SingleColors", "Myeloid_DHIM")
+#Folder <- file.path("/media", "david", "DavidRach", "SingleColors", "Myeloid_DHIM")
+Folder <- file.path("G:", "SingleColors", "Myeloid_DHIM")
 
 Study <- "Myeloid_DHIM"
 Fluorophore <- "BUV395"
