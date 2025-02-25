@@ -25,7 +25,7 @@ This dashboard was created with [Quarto](https://quarto.org/) and is maintained 
 library(htmltools)
 HTML("
 <ul>
-  <li><a href='Myeloid.html'>Myeloid Panel</a></li>
+  <li><a href='Myeloid/BUV395_CD18.html'>BUV395 CD18</a></li>
 </ul>
 ")
 
