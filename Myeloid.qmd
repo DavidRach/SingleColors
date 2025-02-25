@@ -16,15 +16,16 @@ This dashboard contains visualized data from respective panels unmixing controls
 
 This dashboard was created with [Quarto](https://quarto.org/) and is maintained by [David Rach](https://github.com/DavidRach)
 
-## Laser {.tabset}
+## Laser {width="50%"}
 
 ```{r}
 #| title: UltraViolet
+#| icon: cup-hot
+#| content: valuebox
 library(htmltools)
-
 HTML("
 <ul>
-  <li><a href='Myeloid.html'></a>Myeloid Panel</li>
+  <li><a href='Myeloid.html'>Myeloid Panel</a></li>
 </ul>
 ")
 
@@ -32,22 +33,31 @@ HTML("
 
 ```{r}
 #| title: Violet
+#| icon: cup-hot
+#| content: valuebox
 
 HTML("
 <ul>
-  <li><a href='Myeloid/BV711_FceR1a.html'></a>BV711 FceR1a</li>
-  <li><a href='Myeloid/BV750_CD303.html'></a>BV750 CD303</li>
+  <li><a href='Myeloid/BV711_FceR1a.html'>BV711 FceR1a</a></li>
+  <li><a href='Myeloid/BV750_CD303.html'>BV750 CD303</a></li>
 </ul>
 ")
 
 ```
 
+::: {.card title=""}
+
+:::
+
+## Second Column
 ```{r}
 #| title: Blue
+#| icon: cup-hot
+#| content: valuebox
 
 HTML("
 <ul>
-  <li><a href='Myeloid/PerCPCy55_CD123.html'></a>PerCP-Cy5.5 CD123</li>
+  <li><a href='Myeloid/PerCPCy55_CD123.html'>PerCP-Cy5.5 CD123</a></li>
 </ul>
 ")
 
@@ -55,10 +65,12 @@ HTML("
 
 ```{r}
 #| title: YellowGreen
+#| icon: cup-hot
+#| content: valuebox
 
 HTML("
 <ul>
-  <li><a href='Myeloid/PEDazzle594_CD1c.html'></a>PE-Dazzle 594 CD1c</li>
+  <li><a href='Myeloid/PEDazzle594_CD1c.html'>PE-Dazzle 594 CD1c</a></li>
 </ul>
 ")
 
@@ -66,10 +78,12 @@ HTML("
 
 ```{r}
 #| title: Red
+#| icon: cup-hot
+#| content: valuebox
 
 HTML("
 <ul>
-  <li><a href='Myeloid/AF647_CD163.html'></a>Alexa Fluor 647 CD163</li>
+  <li><a href='Myeloid/AF647_CD163.html'>Alexa Fluor 647 CD163</a></li>
 </ul>
 ")
 

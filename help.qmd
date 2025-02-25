@@ -1,0 +1,14 @@
+---
+toc: true
+---
+
+# Luciernaga Signatures
+
+Luciernaga characterizes unmixing controls on the basis of normalized fluorescent signatures of individual cells. For the data displayed on this dashboard, for individual cells it measures the relative height of the three main peaks of the normalized fluorescent signature (relative to the peak detector). 
+
+Therefore, a cluster labeled V7_10-UV7_05-B3_05 has three normalized peaks (V7, UV7, B3) with the second and third peak being 50% the height of the main peak. 
+
+For the data in this dashboard, each peak was binned in 0.1 (10%) intervals. Therefore, if an individual cell had a normalized signature that fell within 10% of each of these three peak cutoffs, it would be classified with other cells that were similar. 
+
+Since we are working with 10^3 combinations, it is possible to overly-split signatures. Consequently, for any unmixing control we are showing only signatures that compromised more than 1% of the population whose main detector aligned with the single color (vs. the autofluorescence)
+

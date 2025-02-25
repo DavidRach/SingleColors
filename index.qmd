@@ -6,8 +6,6 @@ project:
   output-dir: docs/
 ---
 
-Hello
-
 ## {.sidebar}
 
 **About**
@@ -18,76 +16,72 @@ This dashboard was created with [Quarto](https://quarto.org/) and is maintained 
 
 ## First Row {height="50%"}
 
-### Myeloid cells {width="50%"}
-
-::: {.card title="" width="33%"}
+::: {.card title="" width="20%"}
 
 :::
 
 ```{r}
 #| content: valuebox
-#| title: "Myeloid"
+#| title: "Myeloid Panel"
 #| icon: cup-hot
 library(htmltools)
 
 HTML("
 <ul>
-  <li><a href='Myeloid.html'>Myeloid Cell Panel</a></li>
+  <li><a href='Myeloid.html'>Fluorophores</a></li>
 </ul>
 ")
 ```
 
-### B cells {width="50%"}
+```{r}
+#| content: valuebox
+#| title: "B cell Panel"
+#| icon: cup-hot
 
-::: {.card title="" width="33%"}
+HTML("
+<ul>
+  <li><a href='Bcells.html'>Fluorophores</a></li>
+</ul>
+")
+```
+
+::: {.card title="" width="20%"}
+
+:::
+
+
+## Second Row {height="50%"}
+
+::: {.card title="" width="20%"}
 
 :::
 
 ```{r}
 #| content: valuebox
-#| title: "B cells"
+#| title: "Innate-like T cell Panel"
 #| icon: cup-hot
 
 HTML("
 <ul>
-  <li><a href='Bcells.html'>B cell Panel</a></li>
+  <li><a href='ILTs.html'>Fluorophores</a></li>
 </ul>
 ")
 ```
 
-### Innate-like T cells {width="50%"}
 
 ```{r}
 #| content: valuebox
-#| title: "LSR-II"
+#| title: "Alpha Beta T cell Panel"
 #| icon: cup-hot
 
 HTML("
 <ul>
-  <li><a href='ILTs.html'>Innate-like T cell Panel</a></li>
-</ul>
-")
-```
-
-::: {.card title="" width="33%"}
-
-:::
-
-### Alpha Beta T cells {width="50%"}
-
-```{r}
-#| content: valuebox
-#| title: "Extra"
-#| icon: cup-hot
-
-HTML("
-<ul>
-  <li><a href='AlphaBeta.html'></a>Alpha Beta T cell Panel</li>
+  <li><a href='AlphaBeta.html'></a>Fluorophores</li>
 </ul>
 ")
 
 ```
 
-::: {.card title="" width="33%"}
+::: {.card title="" width="20%"}
 
 :::

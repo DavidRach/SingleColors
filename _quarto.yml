@@ -30,6 +30,8 @@ website:
       - text: "ILTs"
         href: ILTs.qmd
     right:
+    - text: "Help"
+      href: help.qmd
     - icon: github
       href: https://github.com/DavidRach/SingleColors
       aria-label: GitHub
