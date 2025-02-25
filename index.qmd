@@ -15,3 +15,79 @@ Hello
 This dashboard contains visualized data from respective panels unmixing controls, as well as relavent instrumental data for the 5 laser Cytek Aurora at the [UMGCC FCSS](https://umgccfcss.github.io/InstrumentQC/)
 
 This dashboard was created with [Quarto](https://quarto.org/) and is maintained by [David Rach](https://github.com/DavidRach)
+
+## First Row {height="50%"}
+
+### Myeloid cells {width="50%"}
+
+::: {.card title="" width="33%"}
+
+:::
+
+```{r}
+#| content: valuebox
+#| title: "Myeloid"
+#| icon: cup-hot
+library(htmltools)
+
+HTML("
+<ul>
+  <li><a href='Myeloid.html'>Myeloid Cell Panel</a></li>
+</ul>
+")
+```
+
+### B cells {width="50%"}
+
+::: {.card title="" width="33%"}
+
+:::
+
+```{r}
+#| content: valuebox
+#| title: "B cells"
+#| icon: cup-hot
+
+HTML("
+<ul>
+  <li><a href='Bcells.html'>B cell Panel</a></li>
+</ul>
+")
+```
+
+### Innate-like T cells {width="50%"}
+
+```{r}
+#| content: valuebox
+#| title: "LSR-II"
+#| icon: cup-hot
+
+HTML("
+<ul>
+  <li><a href='ILTs.html'>Innate-like T cell Panel</a></li>
+</ul>
+")
+```
+
+::: {.card title="" width="33%"}
+
+:::
+
+### Alpha Beta T cells {width="50%"}
+
+```{r}
+#| content: valuebox
+#| title: "Extra"
+#| icon: cup-hot
+
+HTML("
+<ul>
+  <li><a href='AlphaBeta.html'></a>Alpha Beta T cell Panel</li>
+</ul>
+")
+
+```
+
+::: {.card title="" width="33%"}
+
+:::

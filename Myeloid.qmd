@@ -1,7 +1,7 @@
 ---
 format:
   dashboard:
-    orientation: rows
+    orientation: columns
 project:
   output-dir: docs/
 ---
@@ -15,4 +15,64 @@ Myeloid Panel
 This dashboard contains visualized data from respective panels unmixing controls, as well as relavent instrumental data for the 5 laser Cytek Aurora at the [UMGCC FCSS](https://umgccfcss.github.io/InstrumentQC/)
 
 This dashboard was created with [Quarto](https://quarto.org/) and is maintained by [David Rach](https://github.com/DavidRach)
+
+## Laser {.tabset}
+
+```{r}
+#| title: UltraViolet
+library(htmltools)
+
+HTML("
+<ul>
+  <li><a href='Myeloid.html'></a>Myeloid Panel</li>
+</ul>
+")
+
+```
+
+```{r}
+#| title: Violet
+
+HTML("
+<ul>
+  <li><a href='Myeloid/BV711_FceR1a.html'></a>BV711 FceR1a</li>
+  <li><a href='Myeloid/BV750_CD303.html'></a>BV750 CD303</li>
+</ul>
+")
+
+```
+
+```{r}
+#| title: Blue
+
+HTML("
+<ul>
+  <li><a href='Myeloid/PerCPCy55_CD123.html'></a>PerCP-Cy5.5 CD123</li>
+</ul>
+")
+
+```
+
+```{r}
+#| title: YellowGreen
+
+HTML("
+<ul>
+  <li><a href='Myeloid/PEDazzle594_CD1c.html'></a>PE-Dazzle 594 CD1c</li>
+</ul>
+")
+
+```
+
+```{r}
+#| title: Red
+
+HTML("
+<ul>
+  <li><a href='Myeloid/AF647_CD163.html'></a>Alexa Fluor 647 CD163</li>
+</ul>
+")
+
+```
+
 
