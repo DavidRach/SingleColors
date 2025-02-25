@@ -19,10 +19,10 @@ UnstainedBeads <- "Beads\\Unstained"
 UnstainedBeads <- list.files(Folder, UnstainedBeads, full.names=TRUE, recursive=TRUE)
 Dates1 <- str_extract(UnstainedBeads, "(?<=DHIM/)[^/]+(?=/Beads)")
 
-Fluorophore <- "Alexa Fluor 647"
+Fluorophore <- "PerCP-Cy5.5"
 Beads <- list.files(Folder, Fluorophore, full.names=TRUE, recursive=TRUE)
 Beads <- Beads[grep("Beads", Beads)]
-Dates2 <- str_extract(Beads, "(?<=DHIM/)[^/]+(?=/CD163)")
+Dates2 <- str_extract(Beads, "(?<=DHIM/)[^/]+(?=/CD123)")
 
 if (length(Dates1) != length(Dates2)){stop("Different number of unstained to single color controls")}
 ```
@@ -43,7 +43,7 @@ Data <- Luciernaga_SignatureExternalUnstained(x=Dates1, UnstainedList=UnstainedB
 Folder <- "Myeloid"
 outpath <- file.path("/home", "david", "Documents", "SingleColors", "data")
 outpath <- file.path(outpath, Folder)
-filename <- "AF647_CD163_Myeloid"
+filename <- "PerCP-Cy5.5_CD123_Myeloid"
 
 Dataset <- Data$data
 CSVFilename <- paste0(filename, ".csv")
@@ -51,6 +51,7 @@ CSVFilename <- file.path(outpath, CSVFilename)
 write.csv(Dataset, CSVFilename, row.names=FALSE)
 
 ThePlots <- flatten(Data$plot)
+
 SendPDF <- function(x, outpath, filename, width = 7, height = 9){
     TheName <- paste0(filename, ".pdf")
     StorageLocation <- file.path(outpath, TheName)
@@ -61,4 +62,8 @@ SendPDF <- function(x, outpath, filename, width = 7, height = 9){
 }
 
 SendPDF(x=ThePlots, outpath=outpath, filename=filename)
+```
+
+```{r}
+print("Done")
 ```

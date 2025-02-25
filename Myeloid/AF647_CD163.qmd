@@ -16,7 +16,7 @@ library(Luciernaga)
 ```
 
 ```{r}
-Filename <- "AF647"
+Filename <- "AF647_CD163_Myeloid"
 Folder <- "Myeloid"
 
 WD <- file.path("/home", "david", "Documents", "SingleColors")
