@@ -1,7 +1,7 @@
 ---
 format:
   dashboard:
-    orientation: rows
+    orientation: columns
     scrolling: true
 ---
 
@@ -12,6 +12,8 @@ format:
 This dashboard contains visualized data from respective panels unmixing controls, as well as relavent instrumental data for the 5 laser Cytek Aurora at the [UMGCC FCSS](https://umgccfcss.github.io/InstrumentQC/)
 
 This dashboard was created with [Quarto](https://quarto.org/) and is maintained by [David Rach](https://github.com/DavidRach)
+
+## Data
 
 ```{r}
 #| message: false
@@ -51,7 +53,7 @@ GroupedData <- Luciernaga::Luciernaga_GroupHeatmap(reports=Data, nameColumn="Exp
 #Plot <- Luciernaga:::StackedReportHeatmap(GroupedData1, nameColum="Experiment")
 ```
 
-## LinePlots
+### LinePlots
 
 ```{r}
 PlotData <- Data |> group_by(Cluster) |> slice(1) |> select(-Sample, -Experiment, -Condition, -Count) |> rename(Sample=Cluster) |> ungroup()
@@ -65,13 +67,13 @@ SignatureViews <- QC_ViewSignature(x=AllTheseBastards, data=PlotData, Normalize=
 plotly::ggplotly(SignatureViews)
 ```
 
-## Signatures
+### Signatures
 
 ```{r}
 GroupedData
 ```
 
-## Brightness
+### Brightness
 
 ```{r}
 Plot <- Luciernaga_BrigtnessOverTime(data=Data)
@@ -81,7 +83,7 @@ Plot <- Luciernaga_BrigtnessOverTime(data=Data)
 plotly::ggplotly(Plot)
 ```
 
-## Instrumental MFI
+### Instrumental MFI
 
 ```{r}
 PeakDetectors <- Data1 |> pull(Cluster) |> strsplit("_") |> map_chr(1)
@@ -135,7 +137,7 @@ ThePlotsMFI <- QC_Plots(x=x, FailedFlag=TRUE, MeasurementType=Detector,
 plotly::ggplotly(ThePlotsMFI[[1]])
 ```
 
-## Instrumental Gain
+### Instrumental Gain
 
 ```{r}
 x <- Gain
@@ -156,7 +158,7 @@ ThePlotsGain <- QC_Plots(x=x, FailedFlag=TRUE, MeasurementType=TheGains,
 plotly::ggplotly(ThePlotsGain[[1]])
 ```
 
-## Instrumental RCV
+### Instrumental RCV
 
 ```{r}
 x <- Gain
