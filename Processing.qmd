@@ -10,14 +10,45 @@ library(openCyto)
 library(Luciernaga)
 library(purrr)
 library(dplyr)
+
+FileSort <- function(list, study, type, controlType){
+    if (controlType == "beads"){
+    ThisPattern <- paste0("(?<=", study, "/)[^/]+(?=/", type, ")")
+    } else {
+    ThisPattern <- paste0("(?<=/", study, "/)([^/]+)(?=/)")
+    ThisPattern <- paste0("(?<=/", study, "/)([^/]+)(?=/)")
+    }
+    TheseFiles <- str_extract(list, ThisPattern)
+}
 ```
 
 ```{r}
 Folder <- file.path("/media", "david", "DavidRach", "SingleColors", "Myeloid_DHIM")
 
-UnstainedBeads <- "Beads\\Unstained"
-UnstainedBeads <- list.files(Folder, UnstainedBeads, full.names=TRUE, recursive=TRUE)
-Dates1 <- str_extract(UnstainedBeads, "(?<=DHIM/)[^/]+(?=/Beads)")
+Study <- "DHIM"
+controlType <- "cells"
+Type <- "Cells"
+
+Study <- "DHIM"
+controlType <- "beads"
+Type <- "Beads"
+
+if (controlType == "beads"){
+TheUnstained <- "Unstained"
+Unstained <- list.files(Folder, TheUnstained, full.names=TRUE, recursive=TRUE)
+Unstained <- Unstained[grep("Beads", Unstained)]
+} else if (controlType == "cells"){
+TheUnstained <- "Unstained"
+Unstained <- list.files(Folder, TheUnstained, full.names=TRUE, recursive=TRUE)
+Unstained <- Unstained[grep("Cells", Unstained)]
+} else {stop("Set controlType argument")}
+
+Dates1 <- FileSort(list=Unstained, study=Study, type=Type, controlType=controlType)
+
+
+
+Dates1 <- str_extract(Unstained, "(?<=DHIM/)[^/]+(?=/Beads)")
+Dates1 <- str_extract(Unstained, "(?<=DHIM/)[^/]+(?=/Beads)")
 
 Fluorophore <- "PerCP-Cy5.5"
 Beads <- list.files(Folder, Fluorophore, full.names=TRUE, recursive=TRUE)
