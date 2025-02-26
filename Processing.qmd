@@ -34,8 +34,8 @@ subsets <- "nonDebris"
 Folder <- file.path("G:", "SingleColors", "Myeloid_DHIM")
 
 Study <- "Myeloid_DHIM"
-Fluorophore <- "BUV615"
-Antigen <- "CD89"
+Fluorophore <- "BUV496"
+Antigen <- "HLA-DR"
 
 controlType <- "cells"
 Type <- "Cells"
