@@ -177,6 +177,3 @@ ThePlotsRCV <- QC_Plots(x=x, FailedFlag=TRUE, MeasurementType=TheRCV,
 ```{r}
 plotly::ggplotly(ThePlotsRCV[[1]])
 ```
-
-
-

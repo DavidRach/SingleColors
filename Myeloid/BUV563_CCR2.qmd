@@ -1,0 +1,184 @@
+---
+format:
+  dashboard:
+    orientation: columns
+    scrolling: true
+---
+
+## {.sidebar}
+
+**About**
+
+This dashboard contains visualized data from respective panels unmixing controls, as well as relavent instrumental data for the 5 laser Cytek Aurora at the [UMGCC FCSS](https://umgccfcss.github.io/InstrumentQC/)
+
+This dashboard was created with [Quarto](https://quarto.org/) and is maintained by [David Rach](https://github.com/DavidRach)
+
+## Data
+
+```{r}
+#| message: false
+#| warning: false
+#| include: false
+library(purrr)
+library(dplyr)
+library(stringr)
+library(Luciernaga)
+```
+
+```{r}
+Filename <- "BUV563_CCR2_Myeloid"
+Folder <- "Myeloid"
+
+#WD <- file.path("C:", "Users", "12692", "Documents", "SingleColors")
+WD <- file.path("/home", "david", "Documents", "SingleColors")
+Storage <- file.path(WD, "data", Folder)
+files <- list.files(Storage, pattern=".csv", full.names=TRUE)
+files <- files[grep(Filename, files)]
+Data <- read.csv(files, check.names=FALSE)
+```
+
+```{r}
+Data1 <- Data
+Data1$Experiment <- lubridate::dmy(Data1$Experiment)
+
+TheseDates <- Data1 |> pull(Experiment)
+
+Dates <- Data1 |> arrange(Experiment) |> pull(Experiment) |> unique() |> 
+  format("%d-%b-%Y") |> as.character()
+
+Data$Experiment <- factor(Data$Experiment, levels=Dates)
+
+GroupedData <- Luciernaga::Luciernaga_GroupHeatmap(reports=Data, nameColumn="Experiment", cutoff=0.10, returntype="plot")
+
+#GroupedData1 <- GroupedData |> group_by(Cluster) |> mutate(Occurence = n()) |> filter(Occurence > 3)
+#Plot <- Luciernaga:::StackedReportHeatmap(GroupedData1, nameColum="Experiment")
+```
+
+### LinePlots
+
+```{r}
+PlotData <- Data |> group_by(Cluster) |> slice(1) |> select(-Sample, -Experiment, -Condition, -Count) |> rename(Sample=Cluster) |> ungroup()
+
+AllTheseBastards <- PlotData |> pull(Sample)
+
+SignatureViews <- QC_ViewSignature(x=AllTheseBastards, data=PlotData, Normalize=TRUE)
+```
+
+```{r}
+plotly::ggplotly(SignatureViews)
+```
+
+### Signatures
+
+```{r}
+GroupedData
+```
+
+### Brightness
+
+```{r}
+Plot <- Luciernaga_BrigtnessOverTime(data=Data)
+```
+
+```{r}
+plotly::ggplotly(Plot)
+```
+
+### Instrumental MFI
+
+```{r}
+PeakDetectors <- Data1 |> pull(Cluster) |> strsplit("_") |> map_chr(1)
+Peaks <- as.data.frame(table(PeakDetectors))
+Peaks <- Peaks |> arrange(desc(Freq))
+colnames(Peaks)[1] <- "Detector"
+Detector <- Peaks |> slice(1) |> pull(Detector)
+Detector <- paste0(Detector, "-A")
+
+MFI <- data_path <-                                                
+    paste(                                                  
+      "https://raw.githubusercontent.com",                  
+      "UMGCCFCSS", "InstrumentQC",                   
+      "main", "data", "5L", "Archive", "BeadData5L.csv",                              
+      sep = "/"                                             
+    )
+
+MFI <- read.csv(MFI, check.names=FALSE)
+MFI$DATE <- lubridate::ymd(MFI$DATE)
+MFI <- MFI |> filter(DATE %in% TheseDates)
+
+Gain <- data_path <-                                                
+    paste(                                                  
+      "https://raw.githubusercontent.com",                  
+      "UMGCCFCSS", "InstrumentQC",                   
+      "main", "data", "5L", "Archive", "ArchivedData5L.csv",                              
+      sep = "/"                                             
+    ) 
+
+Gain <- read.csv(Gain, check.names=FALSE)
+Gain$DateTime <- lubridate::ymd_hms(Gain$DateTime)
+Gain <- Gain |> mutate(Date = as.Date(DateTime))
+Gain <- Gain |> filter(Date %in% TheseDates) |> select(-Date)
+```
+
+```{r}
+x <- MFI
+x <- x |> dplyr::filter(Timepoint %in% c("Before", "After"))
+TheColumns <- x |> select(where(~is.numeric(.)||is.integer(.))) |> colnames()
+TheColumns <- setdiff(TheColumns, "TIME")
+TheIntermediate <- TheColumns[!str_detect(TheColumns, "Gain")]
+TheColumnNames <- TheIntermediate[str_detect(TheIntermediate, "-A")]
+
+ThePlotsMFI <- QC_Plots(x=x, FailedFlag=TRUE, MeasurementType=Detector,
+                      plotType = "comparison", returntype = "plots",
+                      Metadata="Timepoint", strict = TRUE, YAxisLabel = "MFI",
+                      RepairVisits=NULL)
+```
+
+```{r}
+plotly::ggplotly(ThePlotsMFI[[1]])
+```
+
+### Instrumental Gain
+
+```{r}
+x <- Gain
+TheColumns <- x |> select(where(~is.numeric(.)||is.integer(.))) |> colnames()
+TheColumns <- setdiff(TheColumns, "TIME")
+TheColumnNames <- TheColumns[str_detect(TheColumns, "Gain")]
+
+DetectorGain <- gsub("-A", "", Detector)
+
+TheGains <- TheColumnNames[str_detect(TheColumnNames, DetectorGain)]
+
+ThePlotsGain <- QC_Plots(x=x, FailedFlag=TRUE, MeasurementType=TheGains,
+                      plotType = "individual", returntype = "plots", YAxisLabel = "Gain",
+                      RepairVisits=NULL)
+```
+
+```{r}
+plotly::ggplotly(ThePlotsGain[[1]])
+```
+
+### Instrumental RCV
+
+```{r}
+x <- Gain
+TheColumns <- x |> select(where(~is.numeric(.)||is.integer(.))) |> colnames()
+TheColumns <- setdiff(TheColumns, "TIME")
+
+TheColumnNames <- TheColumns[str_detect(TheColumns, "rCV")]
+TheRCV <- TheColumnNames[str_detect(TheColumnNames, DetectorGain)]
+
+ThePlotsRCV <- QC_Plots(x=x, FailedFlag=TRUE, MeasurementType=TheRCV,
+                      plotType = "individual", returntype = "plots", YAxisLabel = "%rCV",
+                      RepairVisits=NULL)
+```
+
+```{r}
+plotly::ggplotly(ThePlotsRCV[[1]])
+```
+
+
+
+
+
