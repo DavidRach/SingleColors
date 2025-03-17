@@ -3,6 +3,8 @@ project:
   render:
   - "*.qmd"
   - "!Processing.qmd"
+  - "!Processing_ABs.qmd"
+  - "!Processing_ILTs.qmd"
   output-dir: docs/
 website:
   announcement: 

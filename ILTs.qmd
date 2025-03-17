@@ -15,3 +15,75 @@ ILTs
 This dashboard contains visualized data from respective panels unmixing controls, as well as relavent instrumental data for the 5 laser Cytek Aurora at the [UMGCC FCSS](https://umgccfcss.github.io/InstrumentQC/)
 
 This dashboard was created with [Quarto](https://quarto.org/) and is maintained by [David Rach](https://github.com/DavidRach)
+
+## Laser {width="50%"}
+
+```{r}
+#| title: UltraViolet
+#| icon: cup-hot
+#| content: valuebox
+library(htmltools)
+HTML("
+<ul>
+    <li><a href='Myeloid/AF647_CD163.html'>Example</a></li>
+</ul>
+")
+
+```
+
+```{r}
+#| title: Violet
+#| icon: cup-hot
+#| content: valuebox
+
+HTML("
+<ul>
+    <li><a href='Myeloid/AF647_CD163.html'>Example</a></li>
+</ul>
+")
+
+```
+
+::: {.card title=""}
+
+:::
+
+## Second Column
+```{r}
+#| title: Blue
+#| icon: cup-hot
+#| content: valuebox
+
+HTML("
+<ul>
+    <li><a href='Myeloid/AF647_CD163.html'>Example</a></li>
+</ul>
+")
+
+```
+
+```{r}
+#| title: YellowGreen
+#| icon: cup-hot
+#| content: valuebox
+
+HTML("
+<ul>
+   <li><a href='Myeloid/AF647_CD163.html'>Example</a></li>
+</ul>
+")
+
+```
+
+```{r}
+#| title: Red
+#| icon: cup-hot
+#| content: valuebox
+
+HTML("
+<ul>
+  <li><a href='Myeloid/AF647_CD163.html'>Example</a></li>
+</ul>
+")
+
+```

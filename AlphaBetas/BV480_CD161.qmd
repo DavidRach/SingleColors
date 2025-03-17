@@ -38,6 +38,11 @@ Data <- read.csv(files, check.names=FALSE)
 ```
 
 ```{r}
+Data$Cluster
+Data <- Data |> filter(!str_starts(Cluster, "V8_10"))
+```
+
+```{r}
 Data1 <- Data
 Data1$Experiment <- lubridate::dmy(Data1$Experiment)
 
@@ -47,6 +52,12 @@ Dates <- Data1 |> arrange(Experiment) |> pull(Experiment) |> unique() |>
   format("%d-%b-%Y") |> as.character()
 
 Data$Experiment <- factor(Data$Experiment, levels=Dates)
+
+TheData <- Luciernaga::Luciernaga_GroupHeatmap(reports=Data, nameColumn="Experiment",
+ cutoff=0.05, returntype="data")
+
+TheseOnes <- data.frame(table(TheData$Cluster)) |> arrange(desc(Freq)) |> filter(Freq > 1) |>
+  pull(Var1)
 
 GroupedData <- Luciernaga::Luciernaga_GroupHeatmap(reports=Data, nameColumn="Experiment", cutoff=0.05, returntype="plot")
 
@@ -61,7 +72,9 @@ PlotData <- Data |> group_by(Cluster) |> slice(1) |> select(-Sample, -Experiment
 
 AllTheseBastards <- PlotData |> pull(Sample)
 
-SignatureViews <- QC_ViewSignature(x=AllTheseBastards, data=PlotData, Normalize=TRUE)
+#SignatureViews <- QC_ViewSignature(x=AllTheseBastards, data=PlotData, Normalize=TRUE)
+
+SignatureViews <- QC_ViewSignature(x=TheseOnes, data=PlotData, Normalize=TRUE)
 ```
 
 ```{r}
@@ -77,7 +90,9 @@ GroupedData
 ### Brightness
 
 ```{r}
-Plot <- Luciernaga_BrigtnessOverTime(data=Data)
+Abbreviated <- Data |> filter(Cluster %in% TheseOnes)
+
+Plot <- Luciernaga_BrigtnessOverTime(data=Abbreviated)
 ```
 
 ```{r}
