@@ -1,0 +1,124 @@
+---
+title: "ProcessingScript"
+format: html
+---
+```{r}
+library(stringr)
+library(flowCore)
+library(flowWorkspace)
+library(openCyto)
+library(Luciernaga)
+library(purrr)
+library(dplyr)
+
+FileSort <- function(list, study, type, controlType){
+    if (controlType == "beads"){
+    ThisPattern <- paste0("(?<=", study, "/)[^/]+(?=/", type, ")")
+    } else {
+    ThisPattern <- paste0(".*", study, "/([^/]+)/.*")
+    }
+    TheseFiles <- str_match(list, ThisPattern)[,2]
+    return(TheseFiles)
+}
+```
+
+```{r}
+StorageFolder <- file.path("/home", "david", "Documents", "SingleColors", "data")
+#StorageFolder <- file.path("C:", "Users", "12692", "Documents", "SingleColors", "data")
+FolderName <- "ILTs" 
+StorageFolder <- file.path(StorageFolder, FolderName)
+
+subsets <- "nonDebris"
+
+Folder <- file.path("/media", "david", "DavidRach", "SingleColors", "ILTs")
+#Folder <- file.path("G:", "SingleColors", "ILTs")
+
+Study <- "ILTs"
+Fluorophore <- "BV480"
+Antigen <- "CD161"
+
+controlType <- "cells"
+Type <- "Cells"
+UnstainedType <- "/Unstained" # For delta cell unstained selection
+
+#controlType <- "beads"
+#Type <- "Beads"
+```
+
+```{r}
+if (controlType == "beads"){
+TheUnstained <- "Unstained"
+Unstained <- list.files(Folder, TheUnstained, full.names=TRUE, recursive=TRUE)
+Unstained <- Unstained[grep("Beads", Unstained)]
+} else if (controlType == "cells"){
+TheUnstained <- "Unstained"
+Unstained <- list.files(Folder, TheUnstained, full.names=TRUE, recursive=TRUE)
+Unstained <- Unstained[grep("Cells", Unstained)]
+Unstained <- Unstained[grep(UnstainedType, Unstained)]
+} else {stop("Set controlType argument")}
+
+Dates1 <- FileSort(list=Unstained, study=Study, type=Type, controlType=controlType)
+
+Stained  <- list.files(Folder, Fluorophore, full.names=TRUE, recursive=TRUE)
+
+if (controlType == "beads"){
+    Stained <- Stained [grep("Beads", Stained )]
+} else {Stained <- Stained [grep("Cells", Stained )]}
+
+Dates2 <- str_extract(Stained, paste0("(?<=", Study, "/)[^/]+(?=/", Antigen, ")"))
+
+
+if (length(Dates1) != length(Dates2)){stop("Different number of unstained to single color controls")}
+```
+
+```{r}
+CSVPath <- getwd()
+
+if (controlType == "beads"){
+GateTemplatePath <- file.path(CSVPath, "BeadGates.csv")
+AFOverlap <- read.csv("BeadAFOverlap.csv", check.names=FALSE)
+} 
+
+if (controlType == "cells"){
+    AFOverlap <- read.csv("CellAFOverlap.csv", check.names=FALSE)
+
+    if (subsets=="monocytes"){GateTemplatePath <- file.path(CSVPath, "MonocyteGates.csv")
+        } else if (subsets=="lymphocytes"){GateTemplatePath <- file.path(CSVPath, "LymphocyteGates.csv")
+        } else {GateTemplatePath <- file.path(CSVPath, "LymphocyteGates.csv")}
+}
+```
+
+```{r}
+Data <- Luciernaga_SignatureExternalUnstained(x=Dates1, UnstainedList=Unstained,
+ FluorophoreList=Stained, Multiple=FALSE, GateTemplatePath=GateTemplatePath,
+ AFOverlap=AFOverlap, controlType=controlType, subsets=subsets)
+```
+
+```{r}
+outpath <- StorageFolder
+filename <- paste0(Fluorophore, "_", Antigen, "_", FolderName)
+
+Dataset <- Data$data
+CSVFilename <- paste0(filename, ".csv")
+CSVFilename <- file.path(outpath, CSVFilename)
+write.csv(Dataset, CSVFilename, row.names=FALSE)
+
+ThePlots <- flatten(Data$plot)
+
+SendPDF <- function(x, outpath, filename, width = 7, height = 9){
+    TheName <- paste0(filename, ".pdf")
+    StorageLocation <- file.path(outpath, TheName)
+
+    pdf(file = StorageLocation, width = width, height = height)
+    print(x)
+    dev.off()
+}
+
+SendPDF(x=ThePlots, outpath=outpath, filename=filename)
+```
+
+```{r}
+print("Done")
+```
+
+
