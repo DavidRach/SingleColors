@@ -45,7 +45,7 @@ Data <- Data |> filter(!str_starts(Cluster, "V8_10"))
 Data1 <- Data
 Data1$Experiment <- lubridate::dmy(Data1$Experiment)
 
-TheseDates <- Data1 |> pull(Experiment)
+TheseDates <- Data1 |> arrange(Experiment) |> pull(Experiment) |> unique()
 
 Dates <- Data1 |> arrange(Experiment) |> pull(Experiment) |> unique() |> 
   format("%d-%b-%Y") |> as.character()
@@ -118,7 +118,11 @@ MFI <- data_path <-
 
 MFI <- read.csv(MFI, check.names=FALSE)
 MFI$DATE <- lubridate::ymd(MFI$DATE)
-MFI <- MFI |> filter(DATE %in% TheseDates)
+
+StartDate <- head(TheseDates, 1)
+EndDate <- tail(TheseDates, 1)
+
+MFI <- MFI |> filter(DATE >= StartDate & DATE <= EndDate)
 
 Gain <- data_path <-                                                
     paste(                                                  
